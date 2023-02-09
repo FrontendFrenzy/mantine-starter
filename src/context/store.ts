@@ -1,36 +1,21 @@
 import { create } from 'zustand';
 
-interface TodoState {
-  todos: any[];
-  addTodo: (description: string) => void;
-  removeTodo: (id: string) => void;
-  toggleCompletedState: (id: string) => void;
+interface BearState {
+  bears: number;
+  actions: {
+    increasePopulation: (by: number) => void;
+    removeAllBears: () => void;
+  };
 }
 
-export const useStore = create<TodoState>((set) => ({
-  todos: [],
-  addTodo: (description: string) => {
-    set((state) => ({
-      todos: [
-        ...state.todos,
-        {
-          id: Math.random() * 1000,
-          description,
-          completed: false,
-        } as any,
-      ],
-    }));
-  },
-  removeTodo: (id) => {
-    set((state) => ({
-      todos: state.todos.filter((todo) => todo.id !== id),
-    }));
-  },
-  toggleCompletedState: (id) => {
-    set((state) => ({
-      todos: state.todos.map((todo) =>
-        todo.id === id ? ({ ...todo, completed: !todo.completed } as any) : todo
-      ),
-    }));
+const useBearStore = create<BearState>()((set) => ({
+  bears: 0,
+
+  actions: {
+    increasePopulation: (by) => set((state) => ({ bears: state.bears + by })),
+    removeAllBears: () => set({ bears: 0 }),
   },
 }));
+
+export const useBears = () => useBearStore((state) => state.bears);
+export const useBearActions = () => useBearStore((state) => state.actions);
