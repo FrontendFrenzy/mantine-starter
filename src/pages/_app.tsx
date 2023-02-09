@@ -1,17 +1,16 @@
 import { ColorScheme, ColorSchemeProvider } from '@mantine/core';
 // @ts-ignore
-import { Hydrate, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { getCookie, setCookie } from 'cookies-next';
 import NextApp, { AppContext, AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
 import MantineThemeProvider from '@/theme/ThemeProvider';
+import ReactQueryWrapper from '@/lib/ReactQueryWrapper';
+import { BaseLayout } from '@/layout';
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
-  const [queryClient] = useState(() => new QueryClient());
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -24,20 +23,19 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   return (
     <>
       <Head>
-        <title>Employee Managment System</title>
+        <title>Scan Me Project</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
 
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-        <MantineThemeProvider colorScheme={colorScheme}>
-          <QueryClientProvider client={queryClient}>
-            <Hydrate state={pageProps.dehydratedState}>
+      <ReactQueryWrapper dehydratedState={pageProps.dehydratedState}>
+        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+          <MantineThemeProvider colorScheme={colorScheme}>
+            <BaseLayout>
               <Component {...pageProps} />
-            </Hydrate>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
-        </MantineThemeProvider>
-      </ColorSchemeProvider>
+            </BaseLayout>
+          </MantineThemeProvider>
+        </ColorSchemeProvider>
+      </ReactQueryWrapper>
     </>
   );
 }

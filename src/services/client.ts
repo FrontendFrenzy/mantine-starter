@@ -1,3 +1,13 @@
-// Later on config will goes here
+import axios, { AxiosResponse } from 'axios';
+import { SERVER_URL } from './config';
 
-export const config = 'axios config will goes here ';
+const instance = axios.create({
+  baseURL: SERVER_URL,
+});
+
+const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+
+export const request = {
+  get: <T>(url: string) => instance.get<T>(url).then(responseBody),
+  post: <T>(url: string, body: {}) => instance.post<T>(url, body).then(responseBody),
+};
