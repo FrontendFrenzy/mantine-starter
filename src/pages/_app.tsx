@@ -1,16 +1,26 @@
-import { ColorScheme, ColorSchemeProvider } from '@mantine/core';
-// @ts-ignore
+import { ColorScheme } from '@mantine/core';
 import { getCookie, setCookie } from 'cookies-next';
+import { NextPage } from 'next';
 import NextApp, { AppContext, AppProps } from 'next/app';
 import Head from 'next/head';
-import { useState } from 'react';
+import { ReactElement, ReactNode, useState } from 'react';
 import MantineThemeProvider from '@/theme/ThemeProvider';
-import ReactQueryWrapper from '@/lib/ReactQueryWrapper';
+import { QueryWrapper } from '@/lib';
 import { BaseLayout } from '@/layout';
 
-export default function App(props: AppProps & { colorScheme: ColorScheme }) {
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+export default function App(props: AppPropsWithLayout & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.colorScheme);
+
+  const getLayout = Component.getLayout ?? ((page) => <BaseLayout>{page}</BaseLayout>);
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
@@ -23,19 +33,15 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   return (
     <>
       <Head>
-        <title>Scan Me Project</title>
+        <title>Starter Project</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
 
-      <ReactQueryWrapper dehydratedState={pageProps.dehydratedState}>
-        <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-          <MantineThemeProvider colorScheme={colorScheme}>
-            <BaseLayout>
-              <Component {...pageProps} />
-            </BaseLayout>
-          </MantineThemeProvider>
-        </ColorSchemeProvider>
-      </ReactQueryWrapper>
+      <QueryWrapper dehydratedState={pageProps.dehydratedState}>
+        <MantineThemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+          {getLayout(<Component {...pageProps} />)}
+        </MantineThemeProvider>
+      </QueryWrapper>
     </>
   );
 }

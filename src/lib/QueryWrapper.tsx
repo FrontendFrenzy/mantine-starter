@@ -27,7 +27,7 @@ const queryCache = new QueryCache({
   },
 });
 
-export default function ReactQueryWrapper({
+export default function QueryWrapper({
   dehydratedState,
   children,
 }: {
