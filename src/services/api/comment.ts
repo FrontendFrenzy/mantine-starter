@@ -8,5 +8,4 @@ export const comment = {
   //   edit: (id: number) => {},
 };
 
-
-// just an example how u call apis 
+// just an example how u call apis
