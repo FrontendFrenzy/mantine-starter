@@ -1,7 +1,7 @@
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import React, { ReactNode } from 'react';
-import { Open_Sans } from '@next/font/google';
 import { NotificationsProvider } from '@mantine/notifications';
+import { Open_Sans } from '@next/font/google';
+import React, { ReactNode } from 'react';
 import { customColors } from './Colors';
 
 type ThemeProviderProps = {
@@ -28,6 +28,16 @@ const MantineThemeProvider: React.FC<ThemeProviderProps> = ({
         },
         fontFamily: openSans.style.fontFamily,
         headings: { fontFamily: openSans.style.fontFamily, fontWeight: 700 },
+
+        globalStyles: () => ({
+          '*, *::before, *::after': {
+            boxSizing: 'border-box',
+          },
+
+          'html, body, #__next': {
+            height: '100%',
+          },
+        }),
       }}
       withGlobalStyles
       withNormalizeCSS
